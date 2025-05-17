@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interactive Periodic Table</title>
+    <!-- Bootstrap & AOS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <style>
+      body {
+        background: none;
+        color: black;
+        font-family: "Roboto", sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        overflow-x: hidden;
+      }
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url("../../image.png") no-repeat center center/cover;
+        filter: blur(3px) brightness(0.8);
+        pointer-events: none;
+      }
+      .container {
+        background: rgba(20, 20, 20, 0.7);
+        border-radius: 16px;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+        padding: 32px 24px;
+      }
+      h1 {
+        color: #00ffd0;
+        text-shadow: 0 2px 8px #000;
+      }
+      .form-select,
+      .btn,
+      .btn-primary {
+        background: #222 !important;
+        color: #fff !important;
+        border: 1px solid #444 !important;
+        border-radius: 8px !important;
+        font-weight: bold;
+      }
+      .btn-primary {
+        background-color: #4caf50 !important;
+        color: #fff !important;
+        border: none !important;
+      }
+      .element {
+        background: rgba(0, 0, 0, 0.7) !important;
+        color: #fff !important;
+        border: 1px solid #444 !important;
+        box-shadow: 0 2px 8px #0004;
+      }
+      .element:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px #00ffd088;
+      }
+      .el-number,
+      .el-symbol,
+      .el-name {
+        color: #fff !important;
+      }
+      .info-card {
+        background: #222 !important;
+        color: #ffd700 !important;
+        border: 1px solid #444 !important;
+      }
+      .quiz-btn {
+        margin-top: 0.5rem;
+        background: #ffd700 !important;
+        color: #222 !important;
+        border: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-blur"></div>
+    <div class="container py-4">
+      <h1 class="text-center mb-3">Interactive Periodic Table</h1>
+
+      <!-- Filters & Quiz -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <select id="filter" class="form-select">
+            <option value="all">All Categories</option>
+            <option value="alkali">Alkali Metal</option>
+            <option value="alkaline">Alkaline Earth</option>
+            <option value="transition">Transition Metal</option>
+            <option value="metalloid">Metalloid</option>
+            <option value="nonmetal">Nonmetal</option>
+            <option value="halogen">Halogen</option>
+            <option value="noble">Noble Gas</option>
+            <option value="lanthanoid">Lanthanide</option>
+            <option value="actinoid">Actinide</option>
+          </select>
+        </div>
+        <button id="startQuiz" class="btn btn-primary">Start Quiz</button>
+      </div>
+
+      <!-- Table grid -->
+      <div id="table" class="d-flex flex-wrap justify-content-center"></div>
+
+      <!-- Quiz modal -->
+      <div class="modal fade" id="quizModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Element Symbol Quiz</h5>
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <p id="quizQuestion"></p>
+              <input
+                id="quizAnswer"
+                type="text"
+                class="form-control"
+                placeholder="Enter symbol"
+              />
+              <div id="quizFeedback" class="mt-2"></div>
+              <button id="submitAnswer" class="btn btn-success quiz-btn">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data + Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init();
+      // sample elements.json
+      const elements = [
+        { name: "Hydrogen", symbol: "H", number: 1, category: "nonmetal" },
+        { name: "Helium", symbol: "He", number: 2, category: "noble" },
+        { name: "Lithium", symbol: "Li", number: 3, category: "alkali" },
+        { name: "Beryllium", symbol: "Be", number: 4, category: "alkaline" },
+        { name: "Boron", symbol: "B", number: 5, category: "metalloid" },
+        { name: "Carbon", symbol: "C", number: 6, category: "nonmetal" },
+        { name: "Nitrogen", symbol: "N", number: 7, category: "nonmetal" },
+        { name: "Oxygen", symbol: "O", number: 8, category: "nonmetal" },
+        { name: "Fluorine", symbol: "F", number: 9, category: "halogen" },
+        { name: "Neon", symbol: "Ne", number: 10, category: "noble" },
+        // … add all 118 elements …
+      ];
+
+      const categoryColors = {
+        alkali: "bg-warning",
+        alkaline: "bg-info",
+        transition: "bg-primary text-white",
+        metalloid: "bg-success text-white",
+        nonmetal: "bg-light",
+        halogen: "bg-dark text-white",
+        noble: "bg-secondary text-white",
+        lanthanoid: "bg-danger text-white",
+        actinoid: "bg-danger text-white",
+      };
+
+      const tableEl = document.getElementById("table");
+      const filterEl = document.getElementById("filter");
+
+      function renderTable(filter = "all") {
+        tableEl.innerHTML = "";
+        elements.forEach((el) => {
+          if (filter !== "all" && el.category !== filter) return;
+          const div = document.createElement("div");
+          div.className = `element d-flex flex-column align-items-center justify-content-center ${
+            categoryColors[el.category] || "bg-white"
+          }`;
+          div.setAttribute("data-aos", "fade-up");
+          div.innerHTML = `
+          <div class="el-number">${el.number}</div>
+          <div class="el-symbol">${el.symbol}</div>
+          <div class="el-name">${el.name}</div>
+          <div class="info-card">
+            <strong>${el.name} (${el.symbol})</strong><br/>
+            Atomic #: ${el.number}<br/>
+            Category: ${el.category}
+          </div>`;
+          // hover show info
+          div.addEventListener(
+            "mouseenter",
+            (_) => (div.querySelector(".info-card").style.display = "block")
+          );
+          div.addEventListener(
+            "mouseleave",
+            (_) => (div.querySelector(".info-card").style.display = "none")
+          );
+          tableEl.append(div);
+        });
+      }
+      filterEl.addEventListener("change", () => renderTable(filterEl.value));
+      renderTable();
+
+      // --- Quiz Logic ---
+      const quizModal = new bootstrap.Modal(
+        document.getElementById("quizModal")
+      );
+      const qText = document.getElementById("quizQuestion");
+      const qInput = document.getElementById("quizAnswer");
+      const qFeedback = document.getElementById("quizFeedback");
+      let currentEl;
+
+      document.getElementById("startQuiz").onclick = () => {
+        currentEl = elements[Math.floor(Math.random() * elements.length)];
+        qText.textContent = `What's the symbol for ${currentEl.name}?`;
+        qInput.value = "";
+        qFeedback.textContent = "";
+        quizModal.show();
+      };
+      document.getElementById("submitAnswer").onclick = () => {
+        const ans = qInput.value.trim();
+        if (!ans) return;
+        if (ans.toLowerCase() === currentEl.symbol.toLowerCase()) {
+          qFeedback.innerHTML = '<span class="text-success">✅ Correct!</span>';
+        } else {
+          qFeedback.innerHTML = `<span class="text-danger">❌ No—answer is ${currentEl.symbol}.</span>`;
+        }
+      };
+      fetch("periodic_table_103.json")
+        .then((res) => res.json())
+        .then((data) => {
+          elements = data;
+          renderTable(); // your function
+        });
+    </script>
+  </body>
+</html>

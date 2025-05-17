@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title> Daily Trivia Challenge</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+      
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        padding-top: 80px;
+        position: relative;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+
+      .hero {
+        text-align: center;
+        padding: 60px 20px;
+    
+        color: #fff;
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+        font-weight: bold;
+      }
+
+      .section-title {
+        text-align: center;
+        margin: 50px 0 30px;
+        font-size: 2rem;
+        color: #ffffff;
+      }
+
+      .card-level,
+      .card-bonus {
+        background-color: #000;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-align: center;
+        padding: 30px 20px;
+      }
+
+      .card-level:hover,
+      .card-bonus:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+      }
+
+      .btn-white {
+        background-color: #fff;
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        font-weight: bold;
+        border-radius: 6px;
+        transition: 0.3s ease;
+      }
+
+      .btn-white:hover {
+        background-color: #ddd;
+        transform: scale(1.05);
+      }
+
+      .footer {
+        text-align: center;
+        padding: 20px;
+        background-color: #1c1c1c;
+        margin-top: 60px;
+        color: #aaa;
+      }
+
+      input.form-control {
+        max-width: 300px;
+      }
+
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url("image.png") no-repeat center center/cover;
+        filter: blur(3px) brightness(0.8);
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-blur"></div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="HomePage.html">Miscellaneous</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="navbarNav"
+        >
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="HomePage.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="About.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="AllLevels/Easy/easy.html">Levels</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <h1>Welcome to the Daily Trivia Challenge</h1>
+        <p class="lead">
+          Play daily, challenge your brain, and unlock achievements!
+        </p>
+        <div class="mt-4">
+          <button
+            class="btn-white"
+            onclick="window.open('Daily Trivia.html', '_blank')"
+          >
+            📘 Play Daily Trivia
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Levels -->
+    <div class="container">
+      <h2 class="section-title">Choose Your Level</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div
+            class="card-level"
+            onclick="location.href='AllLevels/Easy/easy.html'"
+          >
+            <h3>Easy</h3>
+            <p>Start with some light trivia fun!</p>
+            <button class="btn-white mt-3">Play</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div
+            class="card-level"
+            onclick="location.href='AllLevels/Medium/medium.html'"
+          >
+            <h3>Medium</h3>
+            <p>Ready for a bit of a challenge?</p>
+            <button class="btn-white mt-3">Play</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div
+            class="card-level"
+            onclick="location.href='AllLevels/Hard/hard.html'"
+          >
+            <h3>Hard</h3>
+            <p>Think you've got what it takes?</p>
+            <button class="btn-white mt-3">Play</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus Games -->
+    <div class="container mt-5">
+      <h2 class="section-title">Bonus Games</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card-bonus" onclick="startMemoryMatch()">
+            <h4>🧠 Memory Match</h4>
+            <button class="btn-white mt-3">Play</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-bonus" onclick="startQuickMath()">
+            <h4>➕ Quick Math</h4>
+            <button class="btn-white mt-3">Play</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card-bonus" onclick="startWordScramble()">
+            <h4>🔤 Word Scramble</h4>
+            <button class="btn-white mt-3">Play</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="gameArea" class="mt-5 text-center"></div>
+    </div>
+
+    <!-- FAQ -->
+     <!-- FAQ Section with Inline CSS -->
+<div class="container mt-5">
+  <h2 style="text-align: center; margin: 50px 0 30px; font-size: 2rem; color: #ffffff;">❓ Frequently Asked Questions</h2>
+  
+  <div class="accordion" id="faqAccordion" style="--bs-accordion-bg: #000; --bs-accordion-color: #fff; --bs-accordion-border-color: #444;">
+    
+    <div class="accordion-item" style="background-color: #000; color: #fff; border: 1px solid #444; border-radius: 10px; margin-bottom: 15px;">
+      <h2 class="accordion-header" id="faqHeadingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1"
+          aria-expanded="false" aria-controls="faq1"
+          style="background-color: #111; color: #0ff; font-weight: bold; border: none;">
+          What is the Daily Trivia Challenge?
+        </button>
+      </h2>
+      <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faqHeadingOne" data-bs-parent="#faqAccordion">
+        <div class="accordion-body" style="background-color: #000; color: #fff;">
+          It’s a fun daily brain game where you answer trivia questions and test your knowledge across various topics.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item" style="background-color: #000; color: #fff; border: 1px solid #444; border-radius: 10px; margin-bottom: 15px;">
+      <h2 class="accordion-header" id="faqHeadingTwo">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2"
+          aria-expanded="false" aria-controls="faq2"
+          style="background-color: #111; color: #0ff; font-weight: bold; border: none;">
+          Is it free to play?
+        </button>
+      </h2>
+      <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faqHeadingTwo" data-bs-parent="#faqAccordion">
+        <div class="accordion-body" style="background-color: #000; color: #fff;">
+          Yes! All our trivia levels and bonus games are completely free to play.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item" style="background-color: #000; color: #fff; border: 1px solid #444; border-radius: 10px; margin-bottom: 15px;">
+      <h2 class="accordion-header" id="faqHeadingThree">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3"
+          aria-expanded="false" aria-controls="faq3"
+          style="background-color: #111; color: #0ff; font-weight: bold; border: none;">
+          How do I unlock higher difficulty levels?
+        </button>
+      </h2>
+      <div id="faq3" class="accordion-collapse collapse" aria-labelledby="faqHeadingThree" data-bs-parent="#faqAccordion">
+        <div class="accordion-body" style="background-color: #000; color: #fff;">
+          Just explore and play! There's no lock — click on any level (Easy, Medium, Hard) and start playing immediately.
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion-item" style="background-color: #000; color: #fff; border: 1px solid #444; border-radius: 10px; margin-bottom: 15px;">
+      <h2 class="accordion-header" id="faqHeadingFour">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4"
+          aria-expanded="false" aria-controls="faq4"
+          style="background-color: #111; color: #0ff; font-weight: bold; border: none;">
+          Are new games added regularly?
+        </button>
+      </h2>
+      <div id="faq4" class="accordion-collapse collapse" aria-labelledby="faqHeadingFour" data-bs-parent="#faqAccordion">
+        <div class="accordion-body" style="background-color: #000; color: #fff;">
+          Yes, we’re constantly working on new mini-games, trivia categories, and challenges to keep things fresh.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Arcade Challenge | All Rights Reserved</p>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+      function startMemoryMatch() {
+        const area = document.getElementById("gameArea");
+        area.innerHTML = "<p><strong>Memory Match coming soon!</strong></p>";
+      }
+
+      function startQuickMath() {
+        const area = document.getElementById("gameArea");
+        area.innerHTML = `
+        <div>
+          <p>Solve: <span id="mathQuestion"></span></p>
+          <input type="number" id="mathAnswer" class="form-control mx-auto mb-2" placeholder="Your answer">
+          <button class="btn-white mt-2" onclick="checkMath()">Submit</button>
+          <div id="mathFeedback" class="mt-3"></div>
+        </div>
+      `;
+        generateMath();
+      }
+
+      function generateMath() {
+        const a = Math.ceil(Math.random() * 20);
+        const b = Math.ceil(Math.random() * 20);
+        window.currentAnswer = a + b;
+        document.getElementById("mathQuestion").textContent = `${a} + ${b} = ?`;
+        document.getElementById("mathFeedback").textContent = "";
+        document.getElementById("mathAnswer").value = "";
+      }
+
+      function checkMath() {
+        const userAns = Number(document.getElementById("mathAnswer").value);
+        const fb = document.getElementById("mathFeedback");
+        if (userAns === window.currentAnswer) {
+          fb.innerHTML = '<span class="text-success">Correct! 🎉</span>';
+        } else {
+          fb.innerHTML = `<span class="text-danger">Oops! The right answer was ${window.currentAnswer}.</span>`;
+        }
+        setTimeout(generateMath, 1500);
+      }
+
+      function startWordScramble() {
+        const words = ["JAVASCRIPT", "BOOTSTRAP", "PROGRAM", "ELEMENT"];
+        const word = words[Math.floor(Math.random() * words.length)];
+        window.original = word;
+        window.scrambled = word
+          .split("")
+          .sort(() => 0.5 - Math.random())
+          .join("");
+        const area = document.getElementById("gameArea");
+        area.innerHTML = `
+        <div>
+          <p>Unscramble this word:</p>
+          <h2>${window.scrambled}</h2>
+          <input type="text" id="scrambleAnswer" class="form-control mx-auto mb-2" placeholder="Your guess">
+          <button class="btn-white mt-2" onclick="checkScramble()">Submit</button>
+          <div id="scrambleFeedback" class="mt-3"></div>
+        </div>
+      `;
+      }
+
+      function checkScramble() {
+        const guess = document
+          .getElementById("scrambleAnswer")
+          .value.toUpperCase();
+        const fb = document.getElementById("scrambleFeedback");
+        if (guess === window.original) {
+          fb.innerHTML =
+            '<span class="text-success">Nice! You got it! 🎉</span>';
+        } else {
+          fb.innerHTML =
+            '<span class="text-danger">Not quite, try again!</span>';
+        }
+      }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

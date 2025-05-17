@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interactive Data Randomizer</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        background: none;
+        color: #fff;
+        font-family: "Roboto", sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        overflow-x: hidden;
+      }
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url("../../image.png") no-repeat center center/cover;
+        filter: blur(3px) brightness(0.8);
+        pointer-events: none;
+      }
+      .container {
+        max-width: 800px;
+        margin-top: 50px;
+        background: rgba(20, 20, 20, 0.7);
+        border-radius: 16px;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+        padding: 32px 24px;
+      }
+      .card {
+        box-shadow: none;
+        background: transparent;
+        border: none;
+      }
+      h2 {
+        color: #00ffd0;
+        text-shadow: 0 2px 8px #000;
+      }
+      .btn,
+      .btn-primary,
+      .btn-outline-secondary {
+        border-radius: 8px !important;
+        font-weight: bold;
+        box-shadow: 0 2px 8px #0004;
+      }
+      .btn-primary {
+        background-color: #4caf50 !important;
+        color: #fff !important;
+        border: none !important;
+      }
+      .btn-outline-secondary {
+        background: #222 !important;
+        color: #fff !important;
+        border: 1px solid #444 !important;
+      }
+      .btn-outline-secondary:hover {
+        background: #444 !important;
+        color: #ffd700 !important;
+      }
+      .list-group-item {
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        border: 1px solid #444;
+      }
+      canvas {
+        max-height: 400px;
+        background: #fff1;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-blur"></div>
+    <div class="container">
+      <div class="card p-4">
+        <h2 class="text-center mb-4">🎲 Interactive Data Randomizer</h2>
+
+        <div class="mb-3 text-center">
+          <button class="btn btn-primary" onclick="randomizeData()">
+            🔀 Randomize Data
+          </button>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-center gap-2 flex-wrap">
+          <button class="btn btn-outline-secondary" onclick="setView('pie')">
+            🥧 Pie
+          </button>
+          <button class="btn btn-outline-secondary" onclick="setView('bar')">
+            📊 Bar
+          </button>
+          <button class="btn btn-outline-secondary" onclick="setView('list')">
+            📋 List
+          </button>
+        </div>
+
+        <div id="chart-container">
+          <canvas id="dataChart"></canvas>
+        </div>
+
+        <ul id="dataList" class="list-group d-none mt-3"></ul>
+      </div>
+    </div>
+
+    <script>
+      let chart;
+      let currentView = "pie";
+      let currentData = [];
+
+      function getRandomData(count = 5) {
+        const data = [];
+        for (let i = 0; i < count; i++) {
+          data.push({
+            label: "Item " + (i + 1),
+            value: Math.floor(Math.random() * 100) + 1,
+          });
+        }
+        return data;
+      }
+
+      function randomizeData() {
+        currentData = getRandomData();
+        render();
+      }
+
+      function setView(view) {
+        currentView = view;
+        render();
+      }
+
+      function render() {
+        const chartContainer = document.getElementById("chart-container");
+        const list = document.getElementById("dataList");
+
+        if (chart) {
+          chart.destroy();
+        }
+
+        if (currentView === "list") {
+          chartContainer.classList.add("d-none");
+          list.classList.remove("d-none");
+          list.innerHTML = "";
+          currentData.forEach((item) => {
+            const li = document.createElement("li");
+            li.className =
+              "list-group-item d-flex justify-content-between align-items-center";
+            li.textContent = item.label;
+            const badge = document.createElement("span");
+            badge.className = "badge bg-primary rounded-pill";
+            badge.textContent = item.value;
+            li.appendChild(badge);
+            list.appendChild(li);
+          });
+        } else {
+          chartContainer.classList.remove("d-none");
+          list.classList.add("d-none");
+          const ctx = document.getElementById("dataChart").getContext("2d");
+          const labels = currentData.map((d) => d.label);
+          const values = currentData.map((d) => d.value);
+          const backgroundColors = [
+            "#0d6efd",
+            "#6610f2",
+            "#6f42c1",
+            "#d63384",
+            "#fd7e14",
+          ];
+
+          chart = new Chart(ctx, {
+            type: currentView,
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Random Data",
+                  data: values,
+                  backgroundColor: backgroundColors,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  display: currentView === "pie",
+                  position: "bottom",
+                },
+              },
+            },
+          });
+        }
+      }
+
+      // Initialize with random data on load
+      window.onload = () => {
+        randomizeData();
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASCII Art Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #00fff7;
+      --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-gradient);
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+      text-align: center;
+      backdrop-filter: blur(10px);
+      max-width: 600px;
+      width: 90%;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--primary-color);
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px var(--primary-color);
+    }
+
+    .ascii-art {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.1rem;
+      color: #ffffff;
+      white-space: pre;
+      text-align: center;
+      opacity: 1;
+      min-height: 200px;
+      margin-top: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      transition: opacity 0.4s ease;
+    }
+
+    button {
+      background: var(--primary-color);
+      color: #000;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #fff;
+      color: #000;
+      box-shadow: 0 0 15px var(--primary-color);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2rem; }
+      .ascii-art { font-size: 1rem; }
+      button { font-size: 0.9rem; padding: 12px 25px; }
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 1.8rem; }
+      .ascii-art { font-size: 0.9rem; }
+      button { font-size: 0.8rem; padding: 10px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🖼️ ASCII Art Generator</h1>
+    <div class="ascii-art" id="asciiArtBox">
+      ____   ___  ____  ____ 
+     |  _ \ / _ \|  _ \|  _ \
+     | | | | | | | | | | | | |
+     | |_| | |_| | |_| | |_| |
+     |____/ \___/|____/|____/
+    </div>
+    <button onclick="generateRandomASCII()">Generate ASCII</button>
+  </div>
+
+  <audio id="quoteSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+  <script>
+    const asciiArtList = [
+`  _____ 
+ / ____|
+| (___  
+ \\___ \\ 
+ ____) |
+|_____/ `,
+
+`   ____ 
+  / ___|
+ | |    
+ | |___ 
+  \\____|`,
+
+`  __  __ 
+ |  \\/  |
+ | \\  / |
+ | |\\/| |
+ | |  | |
+ |_|  |_|`,
+
+`  _____ 
+ |  __ \\
+ | |__) |
+ |  _  / 
+ | | \\ \\ 
+ |_|  \\_\\`,
+
+`  _____ 
+ | ____|
+ |  _|  
+ | |___ 
+ |_____|`,
+
+`  __   __
+ |  \\ /  |
+ | |\\_/| |
+ | |   | |
+ |_|   |_|`,
+
+`   ___  
+  / _ \\ 
+ | | | |
+ | |_| |
+  \\___/ `,
+
+`  _____ 
+ |_   _|
+   | |  
+   | |  
+  _| |_ 
+ |_____|`,
+
+` __     __
+ \\ \\   / /
+  \\ \\ / / 
+   \\ V /  
+    \\_/   `,
+
+` _____ 
+| ____|
+|  _|  
+| |___ 
+|_____|`
+    ];
+
+    function generateRandomASCII() {
+      const asciiArtBox = document.getElementById("asciiArtBox");
+      const randomIndex = Math.floor(Math.random() * asciiArtList.length);
+
+      document.getElementById("quoteSound").play();
+      asciiArtBox.style.opacity = 0;
+
+      setTimeout(() => {
+        asciiArtBox.textContent = asciiArtList[randomIndex];
+        asciiArtBox.style.opacity = 1;
+      }, 300);
+    }
+
+    // Optional: generate one on load
+    window.onload = generateRandomASCII;
+  </script>
+
+</body>
+</html>

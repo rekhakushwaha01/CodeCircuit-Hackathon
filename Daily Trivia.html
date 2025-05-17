@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trivia Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        background: none;
+        color: #fff;
+        font-family: "Segoe UI", "Roboto", sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        overflow-x: hidden;
+      }
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url("image.png") no-repeat center center/cover;
+        filter: blur(3px) brightness(0.8);
+        pointer-events: none;
+      }
+      .milestone-section {
+        width: 100%;
+        max-width: 1200px;
+        margin: 40px auto 30px auto;
+        padding: 32px 16px;
+        background: rgba(20, 20, 20, 0.8);
+        border-radius: 20px;
+        box-shadow: 0 4px 32px rgba(0, 0, 0, 0.5);
+      }
+      .milestones {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 18px;
+      }
+      .milestone {
+        flex: 1 1 150px;
+        min-width: 150px;
+        max-width: 180px;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 16px;
+        padding: 20px 8px 14px 8px;
+        text-align: center;
+        box-shadow: 0 2px 12px #0008;
+        margin: 0 6px;
+      }
+      .milestone .stars {
+        font-size: 1.2rem;
+        color: #ffd700;
+        margin-bottom: 6px;
+      }
+      .milestone-title {
+        font-size: 1.05rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #ffd700;
+        letter-spacing: 1px;
+      }
+      .milestone-img {
+        width: 70px;
+        height: 70px;
+        object-fit: contain;
+        margin-bottom: 10px;
+        background: #222;
+        border-radius: 10px;
+        display: inline-block;
+      }
+      .milestone-points {
+        font-size: 1.05rem;
+        color: #00ffd0;
+        margin-top: 8px;
+        font-weight: bold;
+      }
+      @media (max-width: 900px) {
+        .milestones {
+          flex-wrap: wrap;
+          gap: 18px;
+        }
+        .milestone {
+          min-width: 120px;
+          max-width: 150px;
+          padding: 14px 4px;
+        }
+        .milestone-img {
+          width: 48px;
+          height: 48px;
+        }
+      }
+      @media (max-width: 600px) {
+        .milestones {
+          flex-direction: column;
+          align-items: center;
+        }
+        .milestone {
+          width: 90%;
+          margin: 0 auto 14px auto;
+        }
+      }
+      /* Trivia Game Styling */
+      .quiz-container {
+        max-width: 600px;
+        background: rgba(20, 20, 20, 0.85);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px #00ffd033;
+        margin: 40px auto 30px auto;
+        text-align: center;
+        border: 2px solid #00ffd0;
+      }
+      .quiz-container h2 {
+        color: #00ffd0;
+        text-shadow: 0 2px 8px #000;
+      }
+      .question {
+        font-size: 1.3rem;
+        margin-bottom: 20px;
+        color: #ffd700;
+        text-shadow: 0 1px 4px #000;
+      }
+      .options .btn {
+        width: 100%;
+        margin: 6px 0;
+        background: #111a;
+        color: #fff;
+        border: 1.5px solid #00ffd0;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.2s;
+      }
+      .options .btn:hover:not(:disabled) {
+        background: #00ffd0;
+        color: #222;
+        border-color: #ffd700;
+        transform: scale(1.03);
+      }
+      .btn-success {
+        background: #28a745 !important;
+        color: #fff !important;
+        border-color: #28a745 !important;
+      }
+      .btn-danger {
+        background: #dc3545 !important;
+        color: #fff !important;
+        border-color: #dc3545 !important;
+      }
+      #chartContainer {
+        margin-top: 30px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        background: rgba(0, 0, 0, 0.7);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px #00ffd033;
+        padding: 16px 0 8px 0;
+      }
+      #spinner {
+        display: none;
+        margin: 20px auto;
+      }
+      #percentages {
+        margin-top: 15px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #ffd700;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+      }
+      #percentages span {
+        display: inline-block;
+      }
+      .prize-result {
+        margin-top: 32px;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 16px;
+        padding: 24px 12px;
+        box-shadow: 0 2px 12px #00ffd033;
+        color: #fff;
+        text-align: center;
+        font-size: 1.2rem;
+        border: 2px solid #00ffd0;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .prize-result .milestone-title {
+        font-size: 1.3rem;
+        color: #ffd700;
+        margin-bottom: 8px;
+      }
+      .prize-result .milestone-img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 10px;
+      }
+      @media (max-width: 700px) {
+        .quiz-container {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-blur"></div>
+    <div class="milestone-section">
+      <h2
+        class="text-center mb-4"
+        style="color: #00ffd0; text-shadow: 0 2px 8px #000"
+      >
+        🎁 Trivia Milestone Prizes
+      </h2>
+      <div class="milestones">
+        <div class="milestone">
+          <div class="stars">★</div>
+          <div class="milestone-title">Bronze Explorer</div>
+          <div>
+            <img
+              src="https://img.icons8.com/color/96/backpack.png"
+              class="milestone-img"
+              alt="Bronze Explorer"
+            />
+          </div>
+          <div class="milestone-points">5 Points</div>
+        </div>
+        <div class="milestone">
+          <div class="stars">★★</div>
+          <div class="milestone-title">Silver Adventurer</div>
+          <div>
+            <img
+              src="https://img.icons8.com/color/96/coffee-to-go.png"
+              class="milestone-img"
+              alt="Silver Adventurer"
+            />
+          </div>
+          <div class="milestone-points">10 Points</div>
+        </div>
+        <div class="milestone">
+          <div class="stars">★★★</div>
+          <div class="milestone-title">Gold Challenger</div>
+          <div>
+            <img
+              src="https://img.icons8.com/color/96/hoodie.png"
+              class="milestone-img"
+              alt="Gold Challenger"
+            />
+          </div>
+          <div class="milestone-points">15 Points</div>
+        </div>
+        <div class="milestone">
+          <div class="stars">★★★★</div>
+          <div class="milestone-title">Platinum Master</div>
+          <div>
+            <img
+              src="https://img.icons8.com/color/96/laptop.png"
+              class="milestone-img"
+              alt="Platinum Master"
+            />
+          </div>
+          <div class="milestone-points">20 Points</div>
+        </div>
+        <div class="milestone">
+          <div class="stars">★★★★★</div>
+          <div class="milestone-title">Diamond Legend</div>
+          <div>
+            <img
+              src="https://img.icons8.com/color/96/trophy.png"
+              class="milestone-img"
+              alt="Diamond Legend"
+            />
+          </div>
+          <div class="milestone-points">25 Points</div>
+        </div>
+        <div class="milestone">
+          <div class="stars">🏆🏆🏆🏆🏆🏆</div>
+          <div class="milestone-title">Ultimate Champion</div>
+          <div>
+            <img
+              src="https://img.icons8.com/color/96/medal2--v2.png"
+              class="milestone-img"
+              alt="Ultimate Champion"
+            />
+          </div>
+          <div class="milestone-points">30 Points</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quiz-container">
+      <h2 class="mb-4">🧠 Daily Trivia Quiz</h2>
+      <div id="quizBox">
+        <!-- Question will appear here -->
+      </div>
+      <button id="newBtn" class="btn btn-primary mt-4" onclick="loadQuestion()">
+        🔁 New Trivia
+      </button>
+      <div
+        id="spinner"
+        class="spinner-border text-primary"
+        role="status"
+        style="display: none"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div id="prizeResult"></div>
+      <div id="milestonePause" style="display: none"></div>
+    </div>
+
+    <script>
+      // 30 questions
+      const triviaQuestions = [
+        {
+          q: "Which animal is known as the 'King of the Jungle'?",
+          opts: ["Elephant", "Tiger", "Lion", "Leopard"],
+          ans: 2,
+        },
+        {
+          q: "Which planet is closest to the sun?",
+          opts: ["Earth", "Venus", "Mercury", "Mars"],
+          ans: 2,
+        },
+        {
+          q: "Who painted the Mona Lisa?",
+          opts: ["Picasso", "da Vinci", "Michelangelo", "Van Gogh"],
+          ans: 1,
+        },
+        {
+          q: "What is the capital of France?",
+          opts: ["Rome", "Berlin", "Madrid", "Paris"],
+          ans: 3,
+        },
+        {
+          q: "Which gas do plants absorb?",
+          opts: ["Oxygen", "CO₂", "Nitrogen", "Helium"],
+          ans: 1,
+        },
+        {
+          q: "What is the largest mammal?",
+          opts: ["Elephant", "Blue Whale", "Giraffe", "Hippopotamus"],
+          ans: 1,
+        },
+        {
+          q: "Which continent is the Sahara Desert located in?",
+          opts: ["Asia", "Africa", "Australia", "Europe"],
+          ans: 1,
+        },
+        {
+          q: "What is the boiling point of water?",
+          opts: ["90°C", "100°C", "80°C", "120°C"],
+          ans: 1,
+        },
+        {
+          q: "Who wrote 'Romeo and Juliet'?",
+          opts: ["Shakespeare", "Dickens", "Austen", "Hemingway"],
+          ans: 0,
+        },
+        {
+          q: "Which is the smallest prime number?",
+          opts: ["1", "2", "3", "5"],
+          ans: 1,
+        },
+        {
+          q: "What is the chemical symbol for gold?",
+          opts: ["Au", "Ag", "Gd", "Go"],
+          ans: 0,
+        },
+        {
+          q: "Which country is known as the Land of the Rising Sun?",
+          opts: ["China", "Japan", "Thailand", "India"],
+          ans: 1,
+        },
+        {
+          q: "What is the hardest natural substance?",
+          opts: ["Gold", "Iron", "Diamond", "Silver"],
+          ans: 2,
+        },
+        {
+          q: "Who discovered gravity?",
+          opts: ["Newton", "Einstein", "Galileo", "Tesla"],
+          ans: 0,
+        },
+        {
+          q: "Which planet is known as the Red Planet?",
+          opts: ["Venus", "Mars", "Jupiter", "Saturn"],
+          ans: 1,
+        },
+        {
+          q: "What is the capital of Italy?",
+          opts: ["Rome", "Paris", "Berlin", "Madrid"],
+          ans: 0,
+        },
+        {
+          q: "Which is the largest ocean?",
+          opts: ["Atlantic", "Indian", "Pacific", "Arctic"],
+          ans: 2,
+        },
+        {
+          q: "Who is the author of 'Harry Potter'?",
+          opts: [
+            "J.K. Rowling",
+            "J.R.R. Tolkien",
+            "Stephen King",
+            "Agatha Christie",
+          ],
+          ans: 0,
+        },
+        {
+          q: "What is H2O commonly known as?",
+          opts: ["Salt", "Water", "Oxygen", "Hydrogen"],
+          ans: 1,
+        },
+        {
+          q: "Which instrument has keys, pedals, and strings?",
+          opts: ["Guitar", "Piano", "Drum", "Flute"],
+          ans: 1,
+        },
+        {
+          q: "What is the largest planet?",
+          opts: ["Earth", "Mars", "Jupiter", "Saturn"],
+          ans: 2,
+        },
+        {
+          q: "Who painted the ceiling of the Sistine Chapel?",
+          opts: ["Michelangelo", "da Vinci", "Raphael", "Donatello"],
+          ans: 0,
+        },
+        {
+          q: "Which is the fastest land animal?",
+          opts: ["Lion", "Cheetah", "Horse", "Tiger"],
+          ans: 1,
+        },
+        {
+          q: "What is the main language of Brazil?",
+          opts: ["Spanish", "Portuguese", "French", "English"],
+          ans: 1,
+        },
+        {
+          q: "Which vitamin is produced when a person is exposed to sunlight?",
+          opts: ["A", "B", "C", "D"],
+          ans: 3,
+        },
+        {
+          q: "What is the square root of 64?",
+          opts: ["6", "7", "8", "9"],
+          ans: 2,
+        },
+        {
+          q: "Who invented the telephone?",
+          opts: ["Edison", "Bell", "Newton", "Tesla"],
+          ans: 1,
+        },
+        {
+          q: "Which is the longest river in the world?",
+          opts: ["Amazon", "Nile", "Yangtze", "Mississippi"],
+          ans: 1,
+        },
+        {
+          q: "What is the freezing point of water?",
+          opts: ["0°C", "32°C", "100°C", "-10°C"],
+          ans: 0,
+        },
+        {
+          q: "Which animal is known for its black and white stripes?",
+          opts: ["Tiger", "Zebra", "Leopard", "Giraffe"],
+          ans: 1,
+        },
+      ];
+
+      let correctCount = 0;
+      let incorrectCount = 0;
+      let answeredCount = 0;
+      let chart; // Chart.js instance
+      let pausedForMilestone = false;
+
+      function getMilestonePrize(score) {
+        if (score >= 30) {
+          return {
+            title: "Ultimate Champion",
+            img: "https://img.icons8.com/color/96/medal2--v2.png",
+            points: 30,
+            stars: "🏆🏆🏆🏆",
+          };
+        } else if (score >= 25) {
+          return {
+            title: "Diamond Legend",
+            img: "https://img.icons8.com/color/96/trophy.png",
+            points: 25,
+            stars: "★★★★★",
+          };
+        } else if (score >= 20) {
+          return {
+            title: "Platinum Master",
+            img: "https://img.icons8.com/color/96/laptop.png",
+            points: 20,
+            stars: "★★★★",
+          };
+        } else if (score >= 15) {
+          return {
+            title: "Gold Challenger",
+            img: "https://img.icons8.com/color/96/hoodie.png",
+            points: 15,
+            stars: "★★★",
+          };
+        } else if (score >= 10) {
+          return {
+            title: "Silver Adventurer",
+            img: "https://img.icons8.com/color/96/coffee-to-go.png",
+            points: 10,
+            stars: "★★",
+          };
+        } else if (score >= 5) {
+          return {
+            title: "Bronze Explorer",
+            img: "https://img.icons8.com/color/96/backpack.png",
+            points: 5,
+            stars: "★",
+          };
+        }
+        return null;
+      }
+
+      function loadQuestion() {
+        if (answeredCount >= 30 || pausedForMilestone) return;
+        document.getElementById("spinner").style.display = "none";
+        document.getElementById("prizeResult").innerHTML = "";
+        document.getElementById("milestonePause").style.display = "none";
+        const q = triviaQuestions[answeredCount];
+        const box = document.getElementById("quizBox");
+        box.innerHTML = `
+          <div class="question">${q.q}</div>
+          <div class="options">
+            ${q.opts
+              .map(
+                (o, i) =>
+                  `<button class="btn btn-outline-dark" onclick="checkAnswer(${i},${q.ans},this)">` +
+                  o +
+                  `</button>`
+              )
+              .join("")}
+          </div>
+          <div id="feedback" class="mt-3"></div>
+        `;
+      }
+
+      function checkAnswer(sel, ans, btn) {
+        document
+          .querySelectorAll(".options .btn")
+          .forEach((b) => (b.disabled = true));
+        if (sel === ans) {
+          correctCount++;
+          btn.classList.replace("btn-outline-dark", "btn-success");
+          document.getElementById("feedback").textContent = "Correct! 🎉";
+        } else {
+          incorrectCount++;
+          btn.classList.replace("btn-outline-dark", "btn-danger");
+          const all = document.querySelectorAll(".options .btn");
+          all[ans].classList.replace("btn-outline-dark", "btn-success");
+          document.getElementById("feedback").textContent =
+            "Oops! That was incorrect.";
+        }
+        answeredCount++;
+        // Check for milestone pause
+        if (
+          correctCount > 0 &&
+          correctCount % 5 === 0 &&
+          correctCount <= 30 &&
+          answeredCount < 30
+        ) {
+          pausedForMilestone = true;
+          showMilestonePause();
+          return;
+        }
+        if (answeredCount < 30) {
+          setTimeout(loadQuestion, 1000);
+        } else {
+          document.getElementById("newBtn").style.display = "none";
+          document.getElementById("spinner").style.display = "block";
+          setTimeout(() => {
+            showPrize();
+          }, 1500);
+        }
+      }
+
+      function showMilestonePause() {
+        const prize = getMilestonePrize(correctCount);
+        let html = `<div class='prize-result'>
+          <div>Your Score: <b>${correctCount} / 30</b></div>`;
+        if (prize) {
+          html += `<div class="milestone-title mt-3">${prize.stars} ${prize.title}</div>
+          <img src="${prize.img}" class="milestone-img" alt="${prize.title}" />
+          <div class="milestone-points">${prize.points} Points Milestone</div>
+          <div class="mt-2">Congratulations! You have earned the <b>${prize.title}</b> prize!</div>`;
+        }
+        html += `<div class="mt-4">
+          <button class="btn btn-success" onclick="continueQuiz()">Continue</button>
+          <button class="btn btn-danger" onclick="endQuiz()">Stop</button>
+          <button class="btn btn-warning" onclick="goToPrizeCounter()">Go to Prize Counter</button>
+        </div></div>`;
+        document.getElementById("milestonePause").innerHTML = html;
+        document.getElementById("milestonePause").style.display = "block";
+        document.getElementById("quizBox").innerHTML = "";
+      }
+
+      function continueQuiz() {
+        pausedForMilestone = false;
+        document.getElementById("milestonePause").style.display = "none";
+        loadQuestion();
+      }
+      function endQuiz() {
+        pausedForMilestone = false;
+        document.getElementById("milestonePause").style.display = "none";
+        document.getElementById("newBtn").style.display = "none";
+        showPrize();
+      }
+
+      function showPrize() {
+        let prize = getMilestonePrize(correctCount);
+        let html = `<div class='prize-result'>
+          <div>Your Score: <b>${correctCount} / 30</b></div>`;
+        if (prize) {
+          html += `<div class="milestone-title mt-3">${prize.stars} ${prize.title}</div>
+          <img src="${prize.img}" class="milestone-img" alt="${prize.title}" />
+          <div class="milestone-points">${prize.points} Points Milestone</div>
+          <div class="mt-2">Congratulations! You have earned the <b>${prize.title}</b> prize!</div>`;
+        } else {
+          html += `<div class="mt-3">Keep playing to earn a prize!</div>`;
+        }
+        html += `</div>`;
+        document.getElementById("prizeResult").innerHTML = html;
+      }
+
+      function goToPrizeCounter() {
+        window.location.href = "prizeCounter.html";
+      }
+
+      loadQuestion();
+    </script>
+  </body>
+</html>
