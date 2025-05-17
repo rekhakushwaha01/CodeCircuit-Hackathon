@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Quote Generator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <!-- For sharing as image -->
+    <style>
+      :root {
+        --primary-color: #00fff7;
+        --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        color: #fff;
+        background: none;
+        font-family: "Roboto", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        transition: background 0.6s ease;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url("../../image.png") no-repeat center center/cover;
+        filter: blur(3px) brightness(0.8);
+        pointer-events: none;
+      }
+
+      .quote-container {
+        background: rgba(20, 20, 20, 0.7);
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(0, 255, 204, 0.15);
+        text-align: center;
+        backdrop-filter: blur(10px);
+        max-width: 600px;
+        width: 90%;
+        transition: all 0.5s ease;
+      }
+
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        text-shadow: 0 0 10px var(--primary-color);
+      }
+
+      .quote {
+        font-size: 1.5rem;
+        font-style: italic;
+        color: #ffffff;
+        margin: 30px 0;
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+        min-height: 100px;
+      }
+
+      button {
+        background: var(--primary-color);
+        color: #000;
+        border: none;
+        padding: 15px 30px;
+        font-size: 1rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: bold;
+      }
+
+      button:hover {
+        background: #fff;
+        color: #000;
+        box-shadow: 0 0 15px var(--primary-color);
+        transform: scale(1.05);
+      }
+
+      .favorite-button {
+        background: #ff8c00;
+        margin-top: 10px;
+        color: #fff;
+      }
+
+      .share-button {
+        background: #4caf50;
+        margin-top: 10px;
+        color: #fff;
+      }
+
+      .thoughts-section {
+        display: none;
+        margin-top: 30px;
+        background: rgba(255, 255, 255, 0.08);
+        padding: 20px;
+        border-radius: 10px;
+        backdrop-filter: blur(8px);
+        text-align: left;
+        color: #fff;
+      }
+
+      .thoughts-section input,
+      .thoughts-section textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #333;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+      }
+
+      .thoughts-section button {
+        background: #008cba;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .thoughts-section button:hover {
+        background: #005f73;
+      }
+
+      .user-thoughts {
+        margin-top: 20px;
+        color: #ffffff;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+        .quote {
+          font-size: 1.2rem;
+        }
+        button {
+          font-size: 0.9rem;
+          padding: 12px 25px;
+        }
+        .thoughts-section {
+          padding: 15px;
+        }
+        .thoughts-section input,
+        .thoughts-section textarea {
+          font-size: 0.9rem;
+        }
+      }
+
+      @media (max-width: 500px) {
+        .quote-container {
+          padding: 25px;
+        }
+        h1 {
+          font-size: 1.8rem;
+        }
+        .quote {
+          font-size: 1rem;
+        }
+        button {
+          font-size: 0.8rem;
+          padding: 10px 20px;
+        }
+        .thoughts-section input,
+        .thoughts-section textarea {
+          font-size: 0.8rem;
+        }
+      }
+
+      @media (max-width: 360px) {
+        h1 {
+          font-size: 1.5rem;
+        }
+        .quote {
+          font-size: 0.9rem;
+        }
+        button {
+          font-size: 0.7rem;
+          padding: 8px 18px;
+        }
+        .thoughts-section {
+          padding: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-blur"></div>
+    <div class="quote-container">
+      <h1>💡 Quote of the Moment</h1>
+      <div class="quote" id="quoteBox">Press the button to get inspired!</div>
+      <button onclick="generateQuote()">Get New Quote</button>
+      <button class="favorite-button" onclick="saveFavorite()">
+        Save Favorite
+      </button>
+      <button class="share-button" onclick="shareAsImage()">
+        Share as Image
+      </button>
+
+      <!-- Button to open Thoughts Section -->
+      <button onclick="showThoughtsSection()">Share Your Thoughts</button>
+
+      <!-- Thoughts Section -->
+      <div class="thoughts-section" id="thoughtsSection">
+        <h2>Share Your Thoughts</h2>
+        <input type="text" id="userName" placeholder="Your Name" />
+        <textarea
+          id="userThoughts"
+          rows="4"
+          placeholder="Write your thoughts here..."
+        ></textarea>
+        <button onclick="submitThought()">Submit</button>
+      </div>
+    </div>
+
+    <audio
+      id="quoteSound"
+      src="https://www.soundjay.com/button/beep-07.wav"
+      preload="auto"
+    ></audio>
+
+    <script>
+      const quotes = [
+        "The best way to predict the future is to create it.",
+        "Creativity is intelligence having fun. – Einstein",
+        "Code is like humor. When you have to explain it, it's bad.",
+        "Innovation distinguishes between a leader and a follower.",
+        "Do one thing every day that scares you. – Eleanor Roosevelt",
+        "Failure is simply the opportunity to begin again, this time more intelligently.",
+        "Dream big. Start small. Act now.",
+        "Everything you can imagine is real. – Picasso",
+        "Don't watch the clock; do what it does. Keep going.",
+        "Action is the foundational key to all success. – Picasso",
+        "The only limit to our realization of tomorrow is our doubts of today.",
+        "Push yourself, because no one else is going to do it for you.",
+        "You are never too old to set another goal or dream a new dream.",
+        "Your limitation—it's only your imagination.",
+        "Work hard in silence. Let success make the noise.",
+        "Great things never come from comfort zones.",
+        "Success doesn't just find you. You have to go out and get it.",
+        "If you can dream it, you can do it. – Walt Disney",
+        "It always seems impossible until it's done. – Nelson Mandela",
+        "Believe you can and you're halfway there. – Teddy Roosevelt",
+      ];
+
+      const colors = [
+        "#ff4b1f",
+        "#1fddff",
+        "#00ff87",
+        "#ffb347",
+        "#8e2de2",
+        "#f953c6",
+        "#6a11cb",
+        "#25ccf7",
+        "#ffc371",
+        "#d4fc79",
+        "#fc5c7d",
+        "#43e97b",
+        "#38f9d7",
+      ];
+
+      let favoriteQuote = null;
+
+      function generateQuote() {
+        const quoteBox = document.getElementById("quoteBox");
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // Play sound
+        document.getElementById("quoteSound").play();
+
+        quoteBox.style.opacity = 0;
+        setTimeout(() => {
+          quoteBox.textContent = `"${randomQuote}"`;
+          quoteBox.style.opacity = 1;
+        }, 300);
+
+        // Update theme color
+        document.documentElement.style.setProperty(
+          "--primary-color",
+          randomColor
+        );
+        document.body.style.background = `linear-gradient(135deg, ${randomColor}, #000000)`;
+      }
+
+      function saveFavorite() {
+        const quoteBox = document.getElementById("quoteBox");
+        favoriteQuote = quoteBox.textContent;
+        localStorage.setItem("favoriteQuote", favoriteQuote);
+        alert("Quote saved as your favorite!");
+      }
+
+      function shareAsImage() {
+        html2canvas(document.querySelector(".quote-container")).then(function (
+          canvas
+        ) {
+          const dataUrl = canvas.toDataURL();
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = "quote.png";
+          link.click();
+        });
+      }
+
+      function showThoughtsSection() {
+        document.getElementById("thoughtsSection").style.display = "block"; // Show the thoughts section
+      }
+
+      function submitThought() {
+        const userName = document.getElementById("userName").value;
+        const userThoughts = document.getElementById("userThoughts").value;
+
+        if (userName && userThoughts) {
+          alert("Your thoughts have been submitted!");
+
+          // Clear input fields
+          document.getElementById("userName").value = "";
+          document.getElementById("userThoughts").value = "";
+
+          // Hide the thoughts section and show the quote section
+          document.getElementById("thoughtsSection").style.display = "none";
+        } else {
+          alert("Please fill in both fields!");
+        }
+      }
+
+      // Auto-rotate every 10 seconds
+      setInterval(generateQuote, 10000);
+
+      // Load favorite quote from localStorage (if available)
+      window.onload = function () {
+        const savedFavorite = localStorage.getItem("favoriteQuote");
+        if (savedFavorite) {
+          favoriteQuote = savedFavorite;
+          alert("Your favorite quote is: " + favoriteQuote);
+        }
+      };
+    </script>
+  </body>
+</html>

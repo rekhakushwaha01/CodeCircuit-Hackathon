@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Name Generator Game</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Roboto", sans-serif;
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: background 1s ease;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      .background-blur {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: url("../../image.png") no-repeat center center/cover;
+        filter: blur(3px) brightness(0.8);
+        pointer-events: none;
+      }
+
+      .container {
+        text-align: center;
+        padding: 40px;
+        border-radius: 20px;
+        background: rgba(20, 20, 20, 0.7);
+        box-shadow: 0 0 20px rgba(0, 255, 204, 0.15);
+        backdrop-filter: blur(10px);
+        width: 90%;
+        max-width: 500px;
+      }
+
+      h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 2.5rem;
+        color: #00ffe7;
+        margin-bottom: 20px;
+        text-shadow: 0 0 10px #00ffe7;
+      }
+
+      .name-box {
+        font-size: 1.8rem;
+        padding: 15px 25px;
+        background-color: #111a;
+        border: 2px solid #00ffc8;
+        color: #00ffc8;
+        border-radius: 10px;
+        margin: 20px auto;
+        min-width: 250px;
+        opacity: 0;
+        animation: fadeIn 1s forwards;
+      }
+
+      .btn {
+        padding: 12px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        color: #fff;
+        background: linear-gradient(135deg, #00ffcc, #0066ff);
+        box-shadow: 0 0 15px #00ffc3;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+      }
+
+      .btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px #00ffc3;
+      }
+
+      input {
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        margin-top: 15px;
+        width: 100%;
+        font-size: 16px;
+        text-align: center;
+        background: #222;
+        color: #00ffc3;
+        outline: none;
+      }
+
+      @keyframes fadeIn {
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 500px) {
+        h1 {
+          font-size: 2rem;
+        }
+        .btn {
+          width: 100%;
+        }
+        .name-box {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-blur"></div>
+
+    <div class="container">
+      <h1>✨ Name Generator</h1>
+
+      <input
+        type="text"
+        id="userName"
+        placeholder="Enter your name or leave blank..."
+      />
+
+      <div class="name-box" id="nameDisplay">Your name will appear here</div>
+
+      <button class="btn" onclick="handleName()">Submit</button>
+    </div>
+
+    <script>
+      const randomNames = [
+        "Zorath",
+        "Nebulon",
+        "Astrax",
+        "Cypher",
+        "NovaRay",
+        "Pixelon",
+        "Lumina",
+        "EchoStorm",
+        "Vortex",
+        "Solara",
+        "Blazewind",
+        "Orion",
+        "Frostbyte",
+        "Skylark",
+        "Nexora",
+      ];
+
+      const themes = [
+        "linear-gradient(to right, #0f2027, #203a43, #2c5364)", // cyberpunk
+        "radial-gradient(ellipse at top, #1a1a2e, #16213e, #0f3460)", // space
+        "linear-gradient(to right, #2b5876, #4e4376)", // forest
+        "linear-gradient(to right, #ff6e7f, #bfe9ff)", // sunset
+        "linear-gradient(to right, #2193b0, #6dd5ed)", // ocean
+        "linear-gradient(to right, #ff4e50, #f9d423)", // fire
+        "linear-gradient(to right, #83a4d4, #b6fbff)", // ice
+        "linear-gradient(to right, #00f2fe, #4facfe)", // neon
+        "linear-gradient(to right, #c79081, #dfa579)", // desert
+        "linear-gradient(to right, #232526, #414345)", // midnight
+        "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)", // rainbow
+        "linear-gradient(to right, #fbc2eb, #a6c1ee)", // candy
+        "linear-gradient(to right, #f6d365, #fda085)", // gold
+        "linear-gradient(to right, #ff758c, #ff7eb3)", // retro
+        "linear-gradient(to right, #a18cd1, #fbc2eb)", // dream
+        "linear-gradient(to right, #000428, #004e92)", // galaxy
+        "linear-gradient(to right, #00c9ff, #92fe9d)", // toxic
+        "linear-gradient(to right, #fddb92, #d1fdff)", // sakura
+        "linear-gradient(to right, #2980b9, #6dd5fa, #ffffff)", // sky
+        "linear-gradient(to right, #e96443, #904e95)", // volcano
+      ];
+
+      function hashNameToTheme(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+          hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return Math.abs(hash) % themes.length;
+      }
+
+      function handleName() {
+        const input = document.getElementById("userName").value.trim();
+        const nameBox = document.getElementById("nameDisplay");
+
+        if (input) {
+          nameBox.style.opacity = 0;
+          setTimeout(() => {
+            nameBox.textContent = input;
+            nameBox.style.opacity = 1;
+          }, 300);
+          document.body.style.background = themes[hashNameToTheme(input)];
+        } else {
+          const randomName =
+            randomNames[Math.floor(Math.random() * randomNames.length)];
+          nameBox.style.opacity = 0;
+          setTimeout(() => {
+            nameBox.textContent = randomName;
+            nameBox.style.opacity = 1;
+          }, 300);
+          document.body.style.background = themes[hashNameToTheme(randomName)];
+        }
+      }
+    </script>
+  </body>
+</html>
